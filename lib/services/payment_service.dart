@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:music_room_app/models/contract.dart';
 import 'package:music_room_app/models/payment.dart';
@@ -36,7 +37,10 @@ class PaymentService {
         .where('status', isEqualTo: 'active')
         .get();
 
+    final activeContractsCount = contractsSnapshot.docs.length;
     int count = 0;
+    int duplicateCount = 0;
+
     for (var doc in contractsSnapshot.docs) {
       final contract = Contract.fromMap(doc.data(), doc.id);
       
@@ -68,8 +72,16 @@ class PaymentService {
 
         await _firestore.collection('payments').doc(paymentId).set(payment.toMap());
         count++;
+      } else {
+        duplicateCount++;
       }
     }
+
+    debugPrint('[PaymentGen] Month: $month');
+    debugPrint('[PaymentGen] Active Contracts: $activeContractsCount');
+    debugPrint('[PaymentGen] Skipped (Duplicates): $duplicateCount');
+    debugPrint('[PaymentGen] Created: $count');
+
     return count;
   }
 

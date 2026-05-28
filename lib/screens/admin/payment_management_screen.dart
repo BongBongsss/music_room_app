@@ -5,6 +5,10 @@ import 'package:music_room_app/services/payment_service.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+final unpaidPaymentsProvider = StreamProvider<List<Payment>>((ref) {
+  return ref.watch(paymentServiceProvider).getUnpaidPayments();
+});
+
 class PaymentManagementScreen extends ConsumerStatefulWidget {
   const PaymentManagementScreen({super.key});
 
@@ -25,7 +29,21 @@ class _PaymentManagementScreenState extends ConsumerState<PaymentManagementScree
   Future<void> _initNotifications() async {
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings();
-    const initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
+    const macOSSettings = DarwinInitializationSettings();
+    const linuxSettings = LinuxInitializationSettings(defaultActionName: 'Open notification');
+    const windowsSettings = WindowsInitializationSettings(
+      appName: 'music_room_app',
+      appUserModelId: 'com.bongbongsss.music_room_app',
+      guid: '12345678-1234-1234-1234-123456789abc',
+    );
+
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+      macOS: macOSSettings,
+      linux: linuxSettings,
+      windows: windowsSettings,
+    );
     await _notificationsPlugin.initialize(settings: initSettings);
   }
 
@@ -37,9 +55,18 @@ class _PaymentManagementScreenState extends ConsumerState<PaymentManagementScree
       final count = await ref.read(paymentServiceProvider).generateMonthlyPayments(month);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$count건의 이번 달 납부 문서가 생성되었습니다.')),
-        );
+        if (count > 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$count건의 이번 달 납부 문서가 생성되었습니다.')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('생성된 납부 문서가 없습니다. (활성 계약 없음 또는 이미 생성됨)'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -62,7 +89,11 @@ class _PaymentManagementScreenState extends ConsumerState<PaymentManagementScree
       importance: Importance.max,
       priority: Priority.high,
     );
-    const notificationDetails = NotificationDetails(android: androidDetails, iOS: DarwinNotificationDetails());
+    const notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: DarwinNotificationDetails(),
+      macOS: DarwinNotificationDetails(),
+    );
 
     await _notificationsPlugin.show(
       id: DateTime.now().millisecond,
@@ -95,9 +126,7 @@ class _PaymentManagementScreenState extends ConsumerState<PaymentManagementScree
 
   @override
   Widget build(BuildContext context) {
-    final unpaidPaymentsAsync = ref.watch(
-      StreamProvider((ref) => ref.watch(paymentServiceProvider).getUnpaidPayments()),
-    );
+    final unpaidPaymentsAsync = ref.watch(unpaidPaymentsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -131,8 +160,31 @@ class _PaymentManagementScreenState extends ConsumerState<PaymentManagementScree
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('오류: $err')),
+        loading: () => const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('납부 데이터를 불러오는 중...'),
+            ],
+          ),
+        ),
+        error: (err, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 48),
+              const SizedBox(height: 16),
+              Text('오류가 발생했습니다: $err'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(unpaidPaymentsProvider),
+                child: const Text('다시 시도'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

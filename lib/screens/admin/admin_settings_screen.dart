@@ -128,7 +128,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: _startTime,
+                        initialValue: _startTime,
                         decoration: const InputDecoration(labelText: '시작 시간'),
                         items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00')
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))
@@ -143,7 +143,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: _endTime,
+                        initialValue: _endTime,
                         decoration: const InputDecoration(labelText: '종료 시간'),
                         items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00')
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))
