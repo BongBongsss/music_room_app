@@ -46,6 +46,7 @@ app.*.map.json
 
 # Additional ignores
 .vscode/
+.firebase/
 .flutter-plugins
 android/local.properties
 .env

@@ -17,8 +17,10 @@ class RoomEditScreen extends ConsumerStatefulWidget {
 class _RoomEditScreenState extends ConsumerState<RoomEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _sizeController = TextEditingController();
+  final _widthController = TextEditingController(); // 가로
+  final _heightController = TextEditingController(); // 세로
   final _priceController = TextEditingController();
+  final _depositController = TextEditingController(); 
   final _descriptionController = TextEditingController();
   final _floorController = TextEditingController();
   final _featureController = TextEditingController();
@@ -40,8 +42,18 @@ class _RoomEditScreenState extends ConsumerState<RoomEditScreen> {
     final room = await ref.read(roomServiceProvider).getRoomById(widget.roomId);
     if (room != null) {
       _nameController.text = room.name;
-      _sizeController.text = room.size.toString();
+      
+      // dimensions (예: "3.4 x 2.8") 파싱
+      if (room.dimensions.contains('x')) {
+        final parts = room.dimensions.split('x');
+        if (parts.length == 2) {
+          _widthController.text = parts[0].trim();
+          _heightController.text = parts[1].trim();
+        }
+      }
+
       _priceController.text = room.price.toString();
+      _depositController.text = room.deposit.toString();
       _descriptionController.text = room.description;
       _floorController.text = room.floor;
       _existingPhotos = List.from(room.photos);
@@ -54,8 +66,10 @@ class _RoomEditScreenState extends ConsumerState<RoomEditScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _sizeController.dispose();
+    _widthController.dispose();
+    _heightController.dispose();
     _priceController.dispose();
+    _depositController.dispose();
     _descriptionController.dispose();
     _floorController.dispose();
     _featureController.dispose();
@@ -125,10 +139,10 @@ class _RoomEditScreenState extends ConsumerState<RoomEditScreen> {
       final updatedRoom = Room(
         roomId: widget.roomId,
         name: _nameController.text,
-        size: double.tryParse(_sizeController.text) ?? 0.0,
-        sizeUnit: 'm^2',
+        dimensions: '${_widthController.text.trim()} x ${_heightController.text.trim()}',
         price: int.tryParse(_priceController.text) ?? 0,
         priceUnit: '원',
+        deposit: int.tryParse(_depositController.text) ?? 0,
         description: _descriptionController.text,
         photos: [..._existingPhotos, ...uploadedUrls],
         features: _features,
@@ -169,13 +183,38 @@ class _RoomEditScreenState extends ConsumerState<RoomEditScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('룸 정보 수정'),
-        actions: [
-          if (!_isLoading)
-            TextButton(
-              onPressed: _saveRoom,
-              child: const Text('저장', style: TextStyle(color: Colors.white)),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
             ),
-        ],
+          ],
+        ),
+        child: SafeArea(
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : _saveRoom,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+            ),
+            child: _isLoading
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                : const Text('수정사항 저장하기', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ),
+        ),
       ),
       body: Stack(
         children: [
@@ -194,10 +233,19 @@ class _RoomEditScreenState extends ConsumerState<RoomEditScreen> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        controller: _sizeController,
-                        decoration: const InputDecoration(labelText: '크기 (m^2)', hintText: '예: 10.5'),
+                        controller: _widthController,
+                        decoration: const InputDecoration(labelText: '가로 (m)', hintText: '예: 3.4'),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        validator: (value) => value == null || value.isEmpty ? '크기를 입력해주세요.' : null,
+                        validator: (value) => value == null || value.isEmpty ? '필수' : null,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _heightController,
+                        decoration: const InputDecoration(labelText: '세로 (m)', hintText: '예: 2.8'),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        validator: (value) => value == null || value.isEmpty ? '필수' : null,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -216,6 +264,13 @@ class _RoomEditScreenState extends ConsumerState<RoomEditScreen> {
                   decoration: const InputDecoration(labelText: '월 이용료 (원)', hintText: '예: 300000'),
                   keyboardType: TextInputType.number,
                   validator: (value) => value == null || value.isEmpty ? '이용료를 입력해주세요.' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _depositController,
+                  decoration: const InputDecoration(labelText: '보증금 (원)', hintText: '예: 100000'),
+                  keyboardType: TextInputType.number,
+                  validator: (value) => value == null || value.isEmpty ? '보증금을 입력해주세요.' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -333,7 +388,7 @@ class _RoomEditScreenState extends ConsumerState<RoomEditScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 100), // 버튼 여유 공간
               ],
             ),
           ),

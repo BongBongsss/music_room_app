@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>방문 예약 신청</title>
+  <style>
+    :root {
+      color-scheme: only light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f8f8fc;
+      color: #202124;
+    }
+
+    html {
+      color-scheme: only light;
+      background: #f8f8fc !important;
+      forced-color-adjust: none;
+    }
+
+    * {
+      box-sizing: border-box;
+      color-scheme: only light;
+      forced-color-adjust: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f8f8fc !important;
+      color: #202124 !important;
+    }
+
+    .app {
+      max-width: 640px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background: #f8f8fc !important;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      height: 64px;
+      display: grid;
+      grid-template-columns: 56px 1fr 56px;
+      align-items: center;
+      background: #ffffff !important;
+      border-bottom: 1px solid #eeeeee;
+    }
+
+    .back,
+    .home {
+      width: 44px;
+      height: 44px;
+      border: 0;
+      background: transparent;
+      color: #202124;
+      line-height: 1;
+    }
+
+    .back {
+      margin-left: 8px;
+      font-size: 34px;
+    }
+
+    .home {
+      margin-right: 8px;
+      font-size: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    main {
+      padding: 28px 24px 40px;
+    }
+
+    h2 {
+      margin: 0 0 24px;
+      font-size: 24px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field-shell {
+      position: relative;
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      align-items: center;
+      min-height: 58px;
+      border: 1px solid #8f9198;
+      border-radius: 4px;
+      background: #ffffff !important;
+    }
+
+    .field-shell:focus-within {
+      border-color: #4f6591;
+      box-shadow: 0 0 0 1px #4f6591;
+    }
+
+    .field-shell.pill {
+      min-height: 64px;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .floating-label {
+      position: absolute;
+      left: 48px;
+      top: -10px;
+      padding: 0 5px;
+      background: #f8f8fc;
+      color: #4f6591;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 18px;
+    }
+
+    .section-label {
+      display: block;
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .field-icon {
+      display: grid;
+      place-items: center;
+      color: #5f6368;
+      user-select: none;
+    }
+
+    .field-icon svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    .home svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      min-height: 56px;
+      border: 0;
+      border-radius: 0;
+      background: #ffffff !important;
+      background-color: #ffffff !important;
+      background-image: linear-gradient(#ffffff, #ffffff) !important;
+      color: #111827 !important;
+      -webkit-text-fill-color: #111827 !important;
+      box-shadow: 0 0 0 1000px #ffffff inset !important;
+      font: inherit;
+      font-size: 18px;
+      outline: none;
+      padding: 14px 16px 14px 0;
+      appearance: none;
+      -webkit-appearance: none;
+      color-scheme: only light;
+      forced-color-adjust: none;
+    }
+
+    textarea {
+      min-height: 104px;
+      resize: vertical;
+      padding: 16px;
+      border: 1px solid #8f9198;
+      border-radius: 4px;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #4f6591;
+      background: #ffffff !important;
+      background-color: #ffffff !important;
+      background-image: linear-gradient(#ffffff, #ffffff) !important;
+      color: #111827 !important;
+      -webkit-text-fill-color: #111827 !important;
+      box-shadow: 0 0 0 1000px #ffffff inset !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #7b8190;
+      -webkit-text-fill-color: #7b8190;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+      -webkit-text-fill-color: #111827 !important;
+      box-shadow: 0 0 0 1000px #ffffff inset !important;
+      transition: background-color 9999s ease-out;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html,
+      body,
+      .app,
+      main {
+        background: #f8f8fc !important;
+        color: #202124 !important;
+      }
+
+      header,
+      input,
+      textarea,
+      select {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+      }
+    }
+
+    .memo-label {
+      display: block;
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .times {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .date-shell {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .date-placeholder {
+      position: absolute;
+      left: 56px;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #7b8190;
+      font-size: 18px;
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .date-shell.has-value .date-placeholder {
+      display: block;
+      color: #111827;
+    }
+
+    .date-shell input[type="hidden"] {
+      display: none;
+    }
+
+    .empty-times {
+      grid-column: 1 / -1;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border: 1px dashed #c8ccd5;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #7b8190;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .time {
+      min-height: 44px;
+      border: 1px solid #c8ccd5;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #202124;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .time.selected {
+      border-color: #2563eb;
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .message {
+      margin: 10px 0 18px;
+      min-height: 20px;
+      color: #b42318;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .submit {
+      width: 100%;
+      min-height: 56px;
+      border: 0;
+      border-radius: 6px;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .submit:disabled {
+      background: #d1d5db;
+      color: #6b7280;
+    }
+
+    .success {
+      display: none;
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 8px;
+      background: #ecfdf3;
+      color: #027a48;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .date-picker[hidden] {
+      display: none;
+    }
+
+    .date-picker {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: end center;
+    }
+
+    .date-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(17, 24, 39, 0.42);
+    }
+
+    .date-panel {
+      position: relative;
+      width: min(640px, 100%);
+      max-height: min(84vh, 620px);
+      overflow: auto;
+      border-radius: 18px 18px 0 0;
+      background: #ffffff;
+      box-shadow: 0 -16px 40px rgba(17, 24, 39, 0.18);
+    }
+
+    .date-actions {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 80px 1fr 80px;
+      align-items: center;
+      min-height: 56px;
+      padding: 0 12px;
+      border-bottom: 1px solid #edf0f5;
+      background: #ffffff;
+    }
+
+    .date-action {
+      min-height: 44px;
+      border: 0;
+      background: transparent;
+      color: #2563eb;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .date-action.cancel {
+      color: #5f6368;
+      text-align: left;
+    }
+
+    .date-action.confirm {
+      text-align: right;
+    }
+
+    .date-action:disabled {
+      color: #b6bdc9;
+    }
+
+    .date-title {
+      text-align: center;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .calendar-nav {
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      align-items: center;
+      padding: 16px 20px 8px;
+    }
+
+    .calendar-nav button {
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 999px;
+      background: #f3f5f9;
+      color: #202124;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .calendar-nav button:disabled {
+      color: #c0c6d2;
+      background: #f7f8fb;
+    }
+
+    .calendar-month {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+      padding: 0 20px;
+    }
+
+    .calendar-weekdays {
+      padding-top: 8px;
+      color: #6b7280;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .calendar-grid {
+      padding-bottom: 24px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #202124;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .calendar-day:disabled {
+      color: #c0c6d2;
+    }
+
+    .calendar-day.selected {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .calendar-blank {
+      aspect-ratio: 1;
+    }
+
+    .complete-modal[hidden] {
+      display: none;
+    }
+
+    .complete-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(17, 24, 39, 0.46);
+    }
+
+    .complete-dialog {
+      width: min(360px, 100%);
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 20px 50px rgba(17, 24, 39, 0.26);
+      overflow: hidden;
+    }
+
+    .complete-body {
+      padding: 28px 24px 20px;
+      text-align: center;
+    }
+
+    .complete-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #ecfdf3;
+      color: #027a48;
+    }
+
+    .complete-icon svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    .complete-title {
+      margin: 0 0 8px;
+      color: #111827;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .complete-text {
+      margin: 0;
+      color: #4b5563;
+      font-size: 15px;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+    .complete-actions {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 10px;
+      padding: 0 18px 18px;
+    }
+
+    .complete-action {
+      min-height: 54px;
+      border-radius: 6px;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .complete-close {
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #374151;
+    }
+
+    .complete-kakao {
+      border: 0;
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .complete-kakao:disabled {
+      background: #d1d5db;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <button class="back" type="button" aria-label="뒤로가기">&lsaquo;</button>
+      <h1>방문 예약 신청</h1>
+      <button class="home" type="button" aria-label="홈으로 이동">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5Z"/>
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <h2>방문 정보를 입력해주세요</h2>
+
+      <form id="visitForm" autocomplete="off">
+        <div class="field">
+          <div class="field-shell">
+            <span class="floating-label">성함</span>
+            <span class="field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4Zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4Z"/>
+              </svg>
+            </span>
+            <input id="userName" name="userName" type="text" lang="ko" inputmode="text" autocomplete="name" placeholder="성함을 입력하세요" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-shell">
+            <span class="floating-label">연락처</span>
+            <span class="field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2Z"/>
+              </svg>
+            </span>
+            <input id="userPhone" name="userPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="연락처를 입력하세요" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="section-label" for="visitDate">방문 희망일</label>
+          <div id="dateShell" class="field-shell pill date-shell" role="button" tabindex="0" aria-label="방문 희망일 선택">
+            <span class="field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M7 2h2v2h6V2h2v2h3c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2L2.01 6C2.01 4.9 2.9 4 4 4h3V2Zm13 8H4v10h16V10Z"/>
+              </svg>
+            </span>
+            <span class="date-placeholder">방문 희망일을 선택하세요</span>
+            <input id="visitDate" name="visitDate" type="hidden">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="section-label">방문 희망 시간</label>
+          <div id="timeSlots" class="times"></div>
+        </div>
+
+        <div class="field">
+          <label class="memo-label" for="memo">문의사항 (선택)</label>
+          <textarea id="memo" name="memo" lang="ko" inputmode="text"></textarea>
+        </div>
+
+        <div id="message" class="message"></div>
+        <button id="submitButton" class="submit" type="submit">예약 신청하기</button>
+        <div id="success" class="success">방문 예약 신청이 완료되었습니다.</div>
+      </form>
+    </main>
+  </div>
+
+  <div id="datePicker" class="date-picker" hidden>
+    <div class="date-backdrop" data-close-date></div>
+    <section class="date-panel" role="dialog" aria-modal="true" aria-labelledby="datePickerTitle">
+      <div class="date-actions">
+        <button id="cancelDate" class="date-action cancel" type="button">취소</button>
+        <div id="datePickerTitle" class="date-title">방문 희망일</div>
+        <button id="confirmDate" class="date-action confirm" type="button" disabled>설정</button>
+      </div>
+      <div class="calendar-nav">
+        <button id="prevMonth" type="button" aria-label="이전 달">&lsaquo;</button>
+        <div id="calendarMonth" class="calendar-month"></div>
+        <button id="nextMonth" type="button" aria-label="다음 달">&rsaquo;</button>
+      </div>
+      <div class="calendar-weekdays" aria-hidden="true">
+        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </section>
+  </div>
+
+  <div id="completeModal" class="complete-modal" hidden>
+    <section class="complete-dialog" role="dialog" aria-modal="true" aria-labelledby="completeTitle">
+      <div class="complete-body">
+        <div class="complete-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="m9 16.17-3.88-3.88L3.7 13.7 9 19 21 7l-1.41-1.41L9 16.17Z"/>
+          </svg>
+        </div>
+        <h2 id="completeTitle" class="complete-title">예약 신청 완료</h2>
+        <p class="complete-text">
+          방문 예약 신청이 완료되었습니다.<br>
+          카톡으로 알려주시면 더 빠른 대응이 가능합니다.
+        </p>
+      </div>
+      <div class="complete-actions">
+        <button id="completeConfirm" class="complete-action complete-close" type="button">닫기</button>
+        <button id="completeKakao" class="complete-action complete-kakao" type="button">카톡으로 알리기</button>
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signInAnonymously
+    } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      getDocs,
+      query,
+      where,
+      limit,
+      addDoc,
+      serverTimestamp
+    } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyBh3dRa39itBXX3_bA5qb_m6LGQJRFKo3M',
+      appId: '1:805961120538:web:f1f6cd82b36d28f3bf0aa3',
+      messagingSenderId: '805961120538',
+      projectId: 'music-room-app-a65c7',
+      authDomain: 'music-room-app-a65c7.firebaseapp.com',
+      storageBucket: 'music-room-app-a65c7.firebasestorage.app',
+      measurementId: 'G-6F49YTN9LK'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('roomId') || '';
+    const settings = {
+      visitAvailableDays: [1, 2, 3, 4, 5],
+      visitStartTime: '09:00',
+      visitEndTime: '21:00',
+      weekdayStartTime: '09:00',
+      weekdayEndTime: '21:00',
+      weekendStartTime: '09:00',
+      weekendEndTime: '21:00'
+    };
+
+    const form = document.getElementById('visitForm');
+    const dateInput = document.getElementById('visitDate');
+    const dateShell = document.getElementById('dateShell');
+    const dateDisplay = dateShell.querySelector('.date-placeholder');
+    const datePicker = document.getElementById('datePicker');
+    const calendarMonth = document.getElementById('calendarMonth');
+    const calendarGrid = document.getElementById('calendarGrid');
+    const cancelDate = document.getElementById('cancelDate');
+    const confirmDate = document.getElementById('confirmDate');
+    const prevMonth = document.getElementById('prevMonth');
+    const nextMonth = document.getElementById('nextMonth');
+    const timeSlots = document.getElementById('timeSlots');
+    const message = document.getElementById('message');
+    const submitButton = document.getElementById('submitButton');
+    const success = document.getElementById('success');
+    const completeModal = document.getElementById('completeModal');
+    const completeConfirm = document.getElementById('completeConfirm');
+    const completeKakao = document.getElementById('completeKakao');
+    let selectedTime = '';
+    let minVisitDate = '';
+    let maxVisitDate = '';
+    let pendingDate = '';
+    let visibleMonth = new Date();
+    const authReady = new Promise((resolve) => {
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        unsubscribe();
+        if (user) {
+          resolve(user);
+          return;
+        }
+        try {
+          const credential = await signInAnonymously(auth);
+          resolve(credential.user);
+        } catch (_) {
+          resolve(null);
+        }
+      });
+    });
+
+    function roomDetailPath() {
+      return `/#/rooms/${encodeURIComponent(roomId)}`;
+    }
+
+    function cameFromSameRoomDetail() {
+      if (!roomId || !document.referrer) return false;
+      try {
+        const referrer = new URL(document.referrer);
+        return referrer.origin === location.origin &&
+          decodeURIComponent(referrer.hash) === `#/rooms/${roomId}`;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    let isLeavingVisitPage = false;
+
+    function returnToPreviousPage() {
+      if (isLeavingVisitPage) return;
+      isLeavingVisitPage = true;
+
+      if (cameFromSameRoomDetail() && history.length > 1) {
+        history.back();
+        return;
+      }
+
+      location.replace(roomId ? roomDetailPath() : '/');
+    }
+
+    // Android system back gestures operate on browser history instead of the
+    // Flutter navigator. Keep one local history entry so a single gesture can
+    // be redirected to the room detail page reliably.
+    history.pushState({ visitRequestGuard: true }, '', location.href);
+    window.addEventListener('popstate', returnToPreviousPage);
+
+    document.querySelector('.back').addEventListener('click', () => {
+      history.back();
+    });
+
+    document.querySelector('.home').addEventListener('click', () => {
+      location.href = '/';
+    });
+
+    completeConfirm.addEventListener('click', () => {
+      location.href = '/';
+    });
+
+    completeKakao.addEventListener('click', () => {
+      const rawUrl = String(settings.kakaoOpenChatUrl || '').trim();
+      if (!rawUrl) return;
+      const url = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`;
+      window.open(url, '_blank', 'noopener');
+      location.href = '/';
+    });
+
+    function showMessage(text) {
+      message.textContent = text || '';
+    }
+
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseDate(dateText) {
+      const [year, month, day] = dateText.split('-').map(Number);
+      if (!year || !month || !day) return null;
+      return new Date(year, month - 1, day);
+    }
+
+    function formatDisplayDate(dateText) {
+      const date = parseDate(dateText);
+      if (!date) return '방문 희망일을 선택하세요';
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${date.getFullYear()}년 ${month}월 ${day}일`;
+    }
+
+    function firstDayOfMonth(date) {
+      return new Date(date.getFullYear(), date.getMonth(), 1);
+    }
+
+    function monthText(date) {
+      return `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+    }
+
+    function isOutOfRange(dateText) {
+      return Boolean((minVisitDate && dateText < minVisitDate) || (maxVisitDate && dateText > maxVisitDate));
+    }
+
+    function dayKey(dateText) {
+      const day = new Date(`${dateText}T00:00:00`).getDay();
+      return day === 0 ? 0 : day;
+    }
+
+    function isWeekend(dateText) {
+      const day = dayKey(dateText);
+      return day === 0 || day === 6;
+    }
+
+    function hourOf(timeText, fallback) {
+      const value = Number.parseInt(String(timeText || '').split(':')[0], 10);
+      return Number.isFinite(value) ? value : fallback;
+    }
+
+    function generateTimeSlots(dateText) {
+      if (!dateText) return [];
+      const defaultStart = settings.visitStartTime || '09:00';
+      const defaultEnd = settings.visitEndTime || '21:00';
+      const startText = isWeekend(dateText) ? (settings.weekendStartTime || defaultStart) : (settings.weekdayStartTime || defaultStart);
+      const endText = isWeekend(dateText) ? (settings.weekendEndTime || defaultEnd) : (settings.weekdayEndTime || defaultEnd);
+      const start = hourOf(startText, 9);
+      const end = hourOf(endText, 21);
+      if (end < start) return [];
+      return Array.from({ length: end - start + 1 }, (_, index) => `${String(start + index).padStart(2, '0')}:00`);
+    }
+
+    function renderTimeHint(text) {
+      timeSlots.innerHTML = '';
+      const hint = document.createElement('div');
+      hint.className = 'empty-times';
+      hint.textContent = text;
+      timeSlots.appendChild(hint);
+    }
+
+    function updateDatePlaceholder() {
+      const hasValue = Boolean(dateInput.value);
+      dateShell.classList.toggle('has-value', hasValue);
+      dateDisplay.textContent = hasValue ? formatDisplayDate(dateInput.value) : '방문 희망일을 선택하세요';
+    }
+
+    function renderCalendar() {
+      calendarMonth.textContent = monthText(visibleMonth);
+      calendarGrid.innerHTML = '';
+
+      const year = visibleMonth.getFullYear();
+      const month = visibleMonth.getMonth();
+      const first = new Date(year, month, 1);
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let index = 0; index < first.getDay(); index += 1) {
+        const blank = document.createElement('div');
+        blank.className = 'calendar-blank';
+        calendarGrid.appendChild(blank);
+      }
+
+      for (let day = 1; day <= daysInMonth; day += 1) {
+        const date = new Date(year, month, day);
+        const dateText = formatDate(date);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'calendar-day';
+        button.textContent = String(day);
+        button.disabled = isOutOfRange(dateText) || !settings.visitAvailableDays.includes(dayKey(dateText));
+        if (dateText === pendingDate) {
+          button.classList.add('selected');
+        }
+        button.addEventListener('click', () => {
+          pendingDate = dateText;
+          confirmDate.disabled = false;
+          renderCalendar();
+        });
+        calendarGrid.appendChild(button);
+      }
+
+      const previousMonthEnd = formatDate(new Date(year, month, 0));
+      const nextMonthStart = formatDate(new Date(year, month + 1, 1));
+      prevMonth.disabled = Boolean(minVisitDate && previousMonthEnd < minVisitDate);
+      nextMonth.disabled = Boolean(maxVisitDate && nextMonthStart > maxVisitDate);
+    }
+
+    function openDatePicker() {
+      pendingDate = dateInput.value || '';
+      const baseDate = parseDate(pendingDate) || parseDate(minVisitDate) || new Date();
+      visibleMonth = firstDayOfMonth(baseDate);
+      confirmDate.disabled = !pendingDate;
+      renderCalendar();
+      datePicker.hidden = false;
+    }
+
+    function closeDatePicker() {
+      datePicker.hidden = true;
+    }
+
+    function renderTimeSlots() {
+      selectedTime = '';
+      timeSlots.innerHTML = '';
+      const dateText = dateInput.value;
+      updateDatePlaceholder();
+      if (!dateText) {
+        renderTimeHint('방문 날짜 선택 후 활성화됩니다');
+        return;
+      }
+
+      if (!settings.visitAvailableDays.includes(dayKey(dateText))) {
+        showMessage('선택한 날짜는 방문 예약 가능 요일이 아닙니다.');
+        return;
+      }
+
+      showMessage('');
+      const slots = generateTimeSlots(dateText);
+      if (slots.length === 0) {
+        renderTimeHint('현재 예약 가능한 시간이 없습니다');
+        showMessage('현재 예약 가능한 시간이 없습니다.');
+        return;
+      }
+
+      for (const slot of slots) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'time';
+        button.textContent = slot;
+        button.addEventListener('click', () => {
+          selectedTime = slot;
+          document.querySelectorAll('.time').forEach((el) => el.classList.remove('selected'));
+          button.classList.add('selected');
+        });
+        timeSlots.appendChild(button);
+      }
+    }
+
+    async function loadSettings() {
+      const snapshot = await getDoc(doc(db, 'settings', 'info'));
+      if (snapshot.exists()) {
+        Object.assign(settings, snapshot.data());
+      }
+    }
+
+    async function hasConflict(visitDate, visitTime) {
+      const q = query(
+        collection(db, 'visits'),
+        where('roomId', '==', roomId),
+        where('visitDate', '==', visitDate),
+        where('visitTime', '==', visitTime),
+        where('status', 'in', ['pending', 'approved', 'confirmed']),
+        limit(1)
+      );
+      const snapshot = await getDocs(q);
+      return !snapshot.empty;
+    }
+
+    function validatePhone(raw) {
+      const digits = raw.replace(/[^0-9]/g, '');
+      return /^01[0-9]{8,9}$/.test(digits) ? digits : '';
+    }
+
+    function formatPhone(raw) {
+      let digits = raw.replace(/[^0-9]/g, '').slice(0, 11);
+      if (!digits) return '';
+      if (!digits.startsWith('010')) {
+        digits = `010${digits.replace(/^0+/, '')}`.slice(0, 11);
+      }
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+      return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+    }
+
+    const phoneInput = document.getElementById('userPhone');
+    phoneInput.addEventListener('focus', () => {
+      if (!phoneInput.value) {
+        phoneInput.value = '010-';
+      }
+    });
+    phoneInput.addEventListener('input', () => {
+      phoneInput.value = formatPhone(phoneInput.value);
+      phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      showMessage('');
+      success.style.display = 'none';
+
+      if (!roomId) {
+        showMessage('방 정보가 없어 예약을 신청할 수 없습니다.');
+        return;
+      }
+
+      const userName = document.getElementById('userName').value.trim();
+      const userPhone = validatePhone(document.getElementById('userPhone').value);
+      const visitDate = dateInput.value;
+      const memo = document.getElementById('memo').value.trim();
+
+      if (!userName) {
+        showMessage('성함을 입력해주세요.');
+        return;
+      }
+      if (!userPhone) {
+        showMessage('올바른 전화번호를 입력해주세요. 예: 01012345678');
+        return;
+      }
+      if (!visitDate || !selectedTime) {
+        showMessage('방문 날짜와 시간을 선택해주세요.');
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = '신청 중...';
+
+      try {
+        const authUser = await authReady;
+
+        if (await hasConflict(visitDate, selectedTime)) {
+          showMessage('이미 같은 시간대 예약이 존재합니다.');
+          return;
+        }
+
+        await addDoc(collection(db, 'visits'), {
+          userId: authUser?.uid || 'guest',
+          userName,
+          userPhone,
+          roomId,
+          visitDate,
+          visitTime: selectedTime,
+          status: 'pending',
+          memo,
+          createdAt: serverTimestamp()
+        });
+
+        await addDoc(collection(db, 'logs'), {
+          action: '예약신청',
+          userName,
+          userRole: 'guest',
+          details: `${roomId}호실 예약 (날짜: ${visitDate})`,
+          timestamp: serverTimestamp()
+        }).catch(() => {});
+
+        form.reset();
+        renderTimeSlots();
+        selectedTime = '';
+        success.style.display = 'block';
+        completeKakao.disabled = !String(settings.kakaoOpenChatUrl || '').trim();
+        completeModal.hidden = false;
+      } catch (error) {
+        showMessage(`예약 신청에 실패했습니다. ${error.message || error}`);
+      } finally {
+        if (completeModal.hidden) {
+          submitButton.disabled = false;
+          submitButton.textContent = '예약 신청하기';
+        }
+      }
+    });
+
+    dateShell.addEventListener('click', openDatePicker);
+    dateShell.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openDatePicker();
+      }
+    });
+    cancelDate.addEventListener('click', closeDatePicker);
+    document.querySelector('[data-close-date]').addEventListener('click', closeDatePicker);
+    confirmDate.addEventListener('click', () => {
+      if (!pendingDate) return;
+      dateInput.value = pendingDate;
+      closeDatePicker();
+      renderTimeSlots();
+    });
+    prevMonth.addEventListener('click', () => {
+      visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() - 1, 1);
+      renderCalendar();
+    });
+    nextMonth.addEventListener('click', () => {
+      visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1);
+      renderCalendar();
+    });
+
+    const today = new Date();
+    minVisitDate = formatDate(today);
+    maxVisitDate = formatDate(new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000));
+
+    loadSettings().catch(() => {}).finally(renderTimeSlots);
+  </script>
+</body>
+</html>

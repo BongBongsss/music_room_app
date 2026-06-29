@@ -23,6 +23,7 @@ dependencies:
   firebase_storage: ^13.4.1
   image_picker: ^1.1.2
   fl_chart: ^0.70.2
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -31,3 +32,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.otf
+        - asset: assets/fonts/Pretendard-Bold.otf
+          weight: 700

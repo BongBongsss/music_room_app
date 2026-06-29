@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:music_room_app/models/contract.dart';
 import 'package:music_room_app/services/contract_service.dart';
 import 'package:music_room_app/services/user_service.dart';
 import 'package:intl/intl.dart';
+
+final contractHistoryProvider = StreamProvider.family<List<Contract>, String>((ref, roomId) {
+  return ref.watch(contractServiceProvider).getContractHistoryByRoom(roomId);
+});
 
 class ContractHistoryScreen extends ConsumerWidget {
   final String roomId;
@@ -10,7 +15,7 @@ class ContractHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final historyAsync = ref.watch(StreamProvider((ref) => ref.watch(contractServiceProvider).getContractHistoryByRoom(roomId)));
+    final historyAsync = ref.watch(contractHistoryProvider(roomId));
 
     return Scaffold(
       appBar: AppBar(

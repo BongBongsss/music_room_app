@@ -102,4 +102,17 @@ class PaymentService {
       return snapshot.docs.map((doc) => Payment.fromMap(doc.data(), doc.id)).toList();
     });
   }
+
+  Stream<List<Payment>> getPaymentsByUser(String userId) {
+    return _firestore
+        .collection('payments')
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+      final payments = snapshot.docs.map((doc) => Payment.fromMap(doc.data(), doc.id)).toList();
+      // dueDate 기준 최신순 정렬
+      payments.sort((a, b) => b.dueDate.compareTo(a.dueDate));
+      return payments;
+    });
+  }
 }

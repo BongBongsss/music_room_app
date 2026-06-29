@@ -11,8 +11,12 @@ class AdminSettingsScreen extends ConsumerStatefulWidget {
 
 class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   final List<int> _availableDays = [];
-  String _startTime = '09:00';
-  String _endTime = '21:00';
+  String _weekdayStartTime = '09:00';
+  String _weekdayEndTime = '21:00';
+  String _weekendStartTime = '09:00';
+  String _weekendEndTime = '21:00';
+  final _kakaoController = TextEditingController();
+  final _mapController = TextEditingController();
   bool _isLoading = false;
 
   final List<String> _dayNames = ['일', '월', '화', '수', '목', '금', '토'];
@@ -23,6 +27,13 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     _loadSettings();
   }
 
+  @override
+  void dispose() {
+    _kakaoController.dispose();
+    _mapController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadSettings() async {
     setState(() => _isLoading = true);
     try {
@@ -30,8 +41,12 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       setState(() {
         _availableDays.clear();
         _availableDays.addAll(List<int>.from(settings['visitAvailableDays'] ?? []));
-        _startTime = settings['visitStartTime'] ?? '09:00';
-        _endTime = settings['visitEndTime'] ?? '21:00';
+        _weekdayStartTime = settings['weekdayStartTime'] ?? '09:00';
+        _weekdayEndTime = settings['weekdayEndTime'] ?? '21:00';
+        _weekendStartTime = settings['weekendStartTime'] ?? '09:00';
+        _weekendEndTime = settings['weekendEndTime'] ?? '21:00';
+        _kakaoController.text = settings['kakaoOpenChatUrl'] ?? '';
+        _mapController.text = settings['mapUrl'] ?? '';
       });
     } catch (e) {
       if (mounted) {
@@ -45,22 +60,16 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   }
 
   Future<void> _saveSettings() async {
-    final startHour = int.tryParse(_startTime.split(':')[0]) ?? 9;
-    final endHour = int.tryParse(_endTime.split(':')[0]) ?? 21;
-    
-    if (startHour > endHour) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('시작 시간은 종료 시간보다 늦을 수 없습니다.')),
-      );
-      return;
-    }
-
     setState(() => _isLoading = true);
     try {
       await ref.read(settingsServiceProvider).updateVisitSettings({
         'visitAvailableDays': _availableDays,
-        'visitStartTime': _startTime,
-        'visitEndTime': _endTime,
+        'weekdayStartTime': _weekdayStartTime,
+        'weekdayEndTime': _weekdayEndTime,
+        'weekendStartTime': _weekendStartTime,
+        'weekendEndTime': _weekendEndTime,
+        'kakaoOpenChatUrl': _kakaoController.text.trim(),
+        'mapUrl': _mapController.text.trim(),
         'updatedAt': DateTime.now(),
       });
       if (mounted) {
@@ -122,19 +131,19 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                   }),
                 ),
                 const SizedBox(height: 32),
-                const Text('방문 예약 가능 시간', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text('평일 예약 가능 시간', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        initialValue: _startTime,
-                        decoration: const InputDecoration(labelText: '시작 시간'),
+                        initialValue: _weekdayStartTime,
+                        decoration: const InputDecoration(labelText: '평일 시작'),
                         items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00')
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                             .toList(),
                         onChanged: (val) {
-                          if (val != null) setState(() => _startTime = val);
+                          if (val != null) setState(() => _weekdayStartTime = val);
                         },
                       ),
                     ),
@@ -143,22 +152,78 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        initialValue: _endTime,
-                        decoration: const InputDecoration(labelText: '종료 시간'),
+                        initialValue: _weekdayEndTime,
+                        decoration: const InputDecoration(labelText: '평일 종료'),
                         items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00')
                             .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                             .toList(),
                         onChanged: (val) {
-                          if (val != null) setState(() => _endTime = val);
+                          if (val != null) setState(() => _weekdayEndTime = val);
                         },
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+                const Text('주말 예약 가능 시간', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        initialValue: _weekendStartTime,
+                        decoration: const InputDecoration(labelText: '주말 시작'),
+                        items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00')
+                            .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                            .toList(),
+                        onChanged: (val) {
+                          if (val != null) setState(() => _weekendStartTime = val);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Text('~'),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        initialValue: _weekendEndTime,
+                        decoration: const InputDecoration(labelText: '주말 종료'),
+                        items: List.generate(24, (i) => '${i.toString().padLeft(2, '0')}:00')
+                            .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                            .toList(),
+                        onChanged: (val) {
+                          if (val != null) setState(() => _weekendEndTime = val);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                const Text('문의 및 지도 정보', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _kakaoController,
+                  decoration: const InputDecoration(
+                    labelText: '카카오톡 오픈채팅 링크',
+                    hintText: 'https://open.kakao.com/...',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.chat_bubble, color: Colors.orange),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _mapController,
+                  decoration: const InputDecoration(
+                    labelText: '네이버/카카오 지도 링크',
+                    hintText: 'https://naver.me/... 또는 https://kakaom.ap/...',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.map, color: Colors.green),
+                  ),
+                ),
                 const SizedBox(height: 40),
                 const Divider(),
                 const Text(
-                  '※ 이 설정은 고객의 방문 예약 신청 화면에 즉시 반영됩니다.',
+                  '※ 이 설정은 앱 메뉴의 위치 안내 및 카카오톡 문의에 즉시 반영됩니다.',
                   style: TextStyle(color: Colors.grey, fontSize: 13),
                 ),
               ],

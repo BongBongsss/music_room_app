@@ -10,6 +10,9 @@ class Contract {
   final int paymentDueDate; // e.g., 5 for the 5th of each month
   final String paymentMethod;
   final String status; // active, expired, terminated
+  final String contractType; // 'fixed' (기간) 또는 'monthly' (매월)
+  final String? renewalDay;  // 매월 갱신일 (예: '01')
+  final String? instrument; // 사용 악기 추가
   final String? memo;
   final DateTime? createdAt;
 
@@ -23,6 +26,9 @@ class Contract {
     required this.paymentDueDate,
     required this.paymentMethod,
     required this.status,
+    required this.contractType,
+    this.renewalDay,
+    this.instrument,
     this.memo,
     this.createdAt,
   });
@@ -35,9 +41,12 @@ class Contract {
       startDate: map['startDate'] ?? '',
       endDate: map['endDate'] ?? '',
       monthlyFee: map['monthlyFee'] ?? 0,
-      paymentDueDate: map['paymentDueDate'] ?? 1,
-      paymentMethod: map['paymentMethod'] ?? '계좌이체',
+      paymentDueDate: map['paymentDueDate'] ?? 0,
+      paymentMethod: map['paymentMethod'] ?? '',
       status: map['status'] ?? 'active',
+      contractType: map['contractType'] ?? 'fixed',
+      renewalDay: map['renewalDay'],
+      instrument: map['instrument'],
       memo: map['memo'],
       createdAt: (map['createdAt'] as Timestamp?)?.toDate(),
     );
@@ -53,6 +62,9 @@ class Contract {
       'paymentDueDate': paymentDueDate,
       'paymentMethod': paymentMethod,
       'status': status,
+      'contractType': contractType,
+      'renewalDay': renewalDay,
+      'instrument': instrument,
       'memo': memo,
       'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : FieldValue.serverTimestamp(),
     };

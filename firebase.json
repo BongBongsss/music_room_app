@@ -1,1 +1,32 @@
-{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"music-room-app-a65c7","configurations":{"android":"1:805961120538:android:aa9cc589816ca61cbf0aa3","ios":"1:805961120538:ios:b3b8ecd4572f1634bf0aa3","macos":"1:805961120538:ios:b3b8ecd4572f1634bf0aa3","web":"1:805961120538:web:f1f6cd82b36d28f3bf0aa3","windows":"1:805961120538:web:64f097e861caeb10bf0aa3"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "music-room-app-a65c7",
+          "configurations": {
+            "android": "1:805961120538:android:aa9cc589816ca61cbf0aa3",
+            "ios": "1:805961120538:ios:b3b8ecd4572f1634bf0aa3",
+            "macos": "1:805961120538:ios:b3b8ecd4572f1634bf0aa3",
+            "web": "1:805961120538:web:f1f6cd82b36d28f3bf0aa3",
+            "windows": "1:805961120538:web:64f097e861caeb10bf0aa3"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

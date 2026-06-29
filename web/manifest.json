@@ -1,11 +1,11 @@
 {
-    "name": "music_room_app",
-    "short_name": "music_room_app",
+    "name": "MPR 음악연습실",
+    "short_name": "MPR 연습실",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "MPR 음악연습실 공실 안내 및 방문 예약",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

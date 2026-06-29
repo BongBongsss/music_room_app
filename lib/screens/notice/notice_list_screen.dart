@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:music_room_app/services/notice_service.dart';
-import 'package:music_room_app/services/auth_service.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
@@ -15,76 +13,7 @@ class NoticeListScreen extends ConsumerStatefulWidget {
 
 class _NoticeListScreenState extends ConsumerState<NoticeListScreen> {
   Future<void> _onAccountPressed() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    try {
-      final userDoc = await ref.read(authServiceProvider).validateAndGetUser(user.uid);
-      final bool isAdmin = userDoc.role == 'admin';
-      if (!mounted) return;
-      await _showAccountMenu(isAdmin: isAdmin);
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('계정 정보를 확인하지 못했습니다.')),
-      );
-      await _showAccountMenu(isAdmin: false);
-    }
-  }
-
-  Future<void> _showAccountMenu({required bool isAdmin}) async {
-    await showModalBottomSheet(
-      context: context,
-      builder: (bottomSheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isAdmin)
-              ListTile(
-                leading: const Icon(Icons.admin_panel_settings),
-                title: const Text('관리자 대시보드'),
-                onTap: () {
-                  Navigator.pop(bottomSheetContext);
-                  context.go('/admin');
-                },
-              ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('로그아웃'),
-              onTap: () {
-                Navigator.pop(bottomSheetContext);
-                _confirmAndLogout();
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _confirmAndLogout() async {
-    if (!mounted) return;
-    final bool? shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('로그아웃'),
-        content: const Text('현재 로그인되어 있습니다. 로그아웃하시겠습니까?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('취소'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('로그아웃'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldLogout == true) {
-      await ref.read(authServiceProvider).signOut();
-    }
+    context.push('/my-page');
   }
 
   @override
@@ -98,6 +27,7 @@ class _NoticeListScreenState extends ConsumerState<NoticeListScreen> {
           IconButton(
             onPressed: _onAccountPressed,
             icon: const Icon(Icons.person),
+            tooltip: '마이페이지',
           ),
         ],
       ),

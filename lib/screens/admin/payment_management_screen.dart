@@ -10,7 +10,8 @@ final unpaidPaymentsProvider = StreamProvider<List<Payment>>((ref) {
 });
 
 class PaymentManagementScreen extends ConsumerStatefulWidget {
-  const PaymentManagementScreen({super.key});
+  final bool showAppBar;
+  const PaymentManagementScreen({super.key, this.showAppBar = true});
 
   @override
   ConsumerState<PaymentManagementScreen> createState() => _PaymentManagementScreenState();
@@ -129,18 +130,20 @@ class _PaymentManagementScreenState extends ConsumerState<PaymentManagementScree
     final unpaidPaymentsAsync = ref.watch(unpaidPaymentsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('납부 관리'),
-        actions: [
-          IconButton(
-            onPressed: _isGenerating ? null : _generatePayments,
-            icon: _isGenerating
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.note_add),
-            tooltip: '이번 달 납부 문서 생성',
-          ),
-        ],
-      ),
+      appBar: widget.showAppBar
+          ? AppBar(
+              title: const Text('납부 관리'),
+              actions: [
+                IconButton(
+                  onPressed: _isGenerating ? null : _generatePayments,
+                  icon: _isGenerating
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.note_add),
+                  tooltip: '이번 달 납부 문서 생성',
+                ),
+              ],
+            )
+          : null,
       body: unpaidPaymentsAsync.when(
         data: (payments) {
           if (payments.isEmpty) {

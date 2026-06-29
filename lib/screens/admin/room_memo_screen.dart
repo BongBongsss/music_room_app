@@ -46,10 +46,10 @@ class _RoomMemoScreenState extends ConsumerState<RoomMemoScreen> {
       final updatedRoom = Room(
         roomId: _room!.roomId,
         name: _room!.name,
-        size: _room!.size,
-        sizeUnit: _room!.sizeUnit,
+        dimensions: _room!.dimensions,
         price: _room!.price,
         priceUnit: _room!.priceUnit,
+        deposit: _room!.deposit, // 보증금 필드 추가
         description: _room!.description,
         photos: _room!.photos,
         features: _room!.features,

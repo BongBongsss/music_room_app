@@ -19,6 +19,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -26,19 +31,45 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _login() async {
-    debugPrint('[LoginScreen] 로그인 버튼 클릭됨: ${_emailController.text}');
+    final rawLoginId = _emailController.text.trim();
+    String loginId = rawLoginId;
+
+    // 입력값에 @가 없으면 자동 도메인 추가 시도
+    if (!loginId.contains('@') && loginId.isNotEmpty) {
+      // 숫자, 하이픈, 공백만 있는지 확인
+      final isDigitsOnly = RegExp(r'^[0-9\-\s]+$').hasMatch(loginId);
+      
+      if (isDigitsOnly) {
+        String cleanDigits = loginId.replaceAll(RegExp(r'[^0-9]'), '');
+        
+        // 8자리만 입력했다면 앞에 010 붙여줌
+        if (cleanDigits.length == 8) {
+          cleanDigits = '010$cleanDigits';
+        }
+        
+        try {
+          loginId = ref.read(authServiceProvider).formatPhoneToEmail(cleanDigits);
+        } catch (e) {
+          // 전화번호 형식이 아니면 그냥 도메인만 붙임
+          loginId = '$cleanDigits@yourroom.com';
+        }
+      } else {
+        // 문자가 섞여있으면(예: admin) 그냥 도메인만 붙임
+        loginId = '$loginId@yourroom.com';
+      }
+    }
+
+    debugPrint('[LoginScreen] 로그인 버튼 클릭: $loginId');
     setState(() => _isLoading = true);
     try {
       await ref.read(authServiceProvider).signIn(
-            _emailController.text,
+            loginId,
             _passwordController.text,
           );
       debugPrint('[LoginScreen] signIn 성공');
       
       if (mounted) {
-        debugPrint('[LoginScreen] context.go("/") 호출 직전');
         context.go('/');
-        debugPrint('[LoginScreen] context.go("/") 호출 직후');
       }
     } catch (e) {
       debugPrint('[LoginScreen] catch 진입: $e');
@@ -46,8 +77,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         String errorMessage = '로그인 실패';
         if (e is FirebaseAuthException) {
           errorMessage = '로그인 오류: ${e.code} - ${e.message}';
-        } else if (e is Exception) {
-          errorMessage = '아이디 또는 비밀번호가 틀렸습니다.';
+        } else {
+          errorMessage = e.toString().replaceAll('Exception: ', '');
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorMessage)),
@@ -90,7 +121,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         if (!mounted) return;
                         await launchUrl(uri, mode: LaunchMode.externalApplication);
                       } else {
-                        throw Exception('링크를 열 수 없습니다.');
+                        throw Exception('문의 링크를 열 수 없습니다.');
                       }
                     } catch (_) {
                       if (!mounted) return;
@@ -132,7 +163,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 32),
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: '아이디 (이메일)', border: OutlineInputBorder()),
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: '전화번호',
+                  prefixText: '010 - ',
+                  hintText: '12345678',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16),
               TextField(
@@ -154,7 +191,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: _showForgotPasswordDialog,
-                child: const Text('비밀번호를 잊으셨나요?', style: TextStyle(color: Colors.grey)),
+                child: Text('비밀번호를 잊으셨나요?', style: TextStyle(color: Colors.grey)),
               ),
             ],
           ),

@@ -94,7 +94,20 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
+## 7. Interactive Safety & Accountability
+
+**Always explain, then wait for explicit approval.**
+
+- **No Unauthorized Edits**: Never modify any code files until the user has provided explicit confirmation (e.g., "Yes", "Proceed") for a specific proposed plan.
+- **Beginner-Friendly Explanations**: Before any change, explain the root cause of the issue and the proposed solution in simple terms that a non-technical user can understand.
+- **Strict Verification**: When adding or modifying functions, rigorously verify that existing methods in the same file are preserved and not accidentally overwritten.
+
+---
+
 ## 개정 이력 (Revision History)
+
+- **2026-05-29**: "7. Interactive Safety & Accountability" 섹션 추가.
+  - **사유**: AI가 사용자의 승인 없이 독단적으로 코드를 수정하거나 기존 기능을 실수로 삭제하는 것을 방지하기 위해 '설명 후 승인 대기' 원칙을 명문화함.
 
 - **2026-05-14**: "6. Documentation Integrity" 섹션 추가.
   - **사유**: 프로젝트의 지속적인 유지보수와 지식 보존을 위해 모든 문서 수정 시 개정 이력을 의무적으로 남기는 원칙을 수립함. 언어 정책(본문 영문, 이력 국문)을 명문화함.
