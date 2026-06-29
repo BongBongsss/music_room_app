@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:music_room_app/firebase_options.dart';
 import 'package:music_room_app/models/user_model.dart';
@@ -22,8 +23,9 @@ class AddCustomerScreen extends ConsumerStatefulWidget {
 class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
+  final _phoneController = TextEditingController(text: '010');
   final _monthlyFeeController = TextEditingController();
+  final _depositController = TextEditingController();
   final _dueDateController = TextEditingController(text: '1');
   final _instrumentController = TextEditingController(); // 악기 정보 컨트롤러 추가
 
@@ -38,6 +40,7 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
     _nameController.dispose();
     _phoneController.dispose();
     _monthlyFeeController.dispose();
+    _depositController.dispose();
     _dueDateController.dispose();
     _instrumentController.dispose(); // 해제
     super.dispose();
@@ -147,6 +150,8 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
       final batch = firestore.batch();
       final contractRef = firestore.collection('contracts').doc();
       final contractId = contractRef.id;
+      final deposit =
+          int.parse(_depositController.text.replaceAll(',', ''));
 
       final newUser = UserModel(
         userId: uid,
@@ -182,6 +187,7 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
 
       batch.update(firestore.collection('rooms').doc(_selectedRoomId), {
         'status': 'occupied',
+        'deposit': deposit,
       });
 
       await batch.commit();
@@ -211,8 +217,9 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
         // 2. 즉시 상태 초기화 (UI rebuild 에러 방지)
         setState(() {
           _nameController.clear();
-          _phoneController.clear();
+          _phoneController.text = '010';
           _monthlyFeeController.clear();
+          _depositController.clear();
           _selectedRoomId = null;
         });
 
@@ -327,8 +334,8 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
                         if (val != null) {
                           final room =
                               vacantRooms.firstWhere((r) => r.roomId == val);
-                          _monthlyFeeController.text =
-                              NumberFormat('#,###').format(room.price);
+                          _monthlyFeeController.text = room.price.toString();
+                          _depositController.text = room.deposit.toString();
                         }
                       });
                     },
@@ -396,7 +403,10 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
                               labelText: '월세 (원)',
                               prefixIcon: Icon(Icons.payments),
                               border: OutlineInputBorder()),
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           validator: (value) => (value == null || value.isEmpty)
                               ? '금액을 입력해주세요.'
                               : null,
@@ -410,7 +420,10 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
                           decoration: const InputDecoration(
                               labelText: '납부일 (일)',
                               border: OutlineInputBorder()),
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return '필수';
@@ -424,6 +437,28 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _depositController,
+                    decoration: const InputDecoration(
+                        labelText: '보증금 (원)',
+                        prefixIcon: Icon(Icons.account_balance_wallet),
+                        border: OutlineInputBorder()),
+                    keyboardType: TextInputType.text,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '보증금을 입력해주세요.';
+                      }
+                      final deposit = int.tryParse(value.replaceAll(',', ''));
+                      if (deposit == null || deposit < 0) {
+                        return '올바른 보증금을 입력해주세요.';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 40),
                   ElevatedButton(
